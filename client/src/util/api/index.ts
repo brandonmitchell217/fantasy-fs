@@ -12,44 +12,8 @@ export const fetchAllPlayers = async () => {
   return data;
 };
 
-export const fetchQBPlayers = async () => {
-  const response = await fetch("http://localhost:3100/api/players/qb");
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data: Player[] = await response.json();
-
-  return data;
-};
-
-export const fetchRBPlayers = async () => {
-  const response = await fetch("http://localhost:3100/api/players/rb");
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data: Player[] = await response.json();
-
-  return data;
-};
-
-export const fetchWRPlayers = async () => {
-  const response = await fetch("http://localhost:3100/api/players/wr");
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data: Player[] = await response.json();
-
-  return data;
-};
-
-export const fetchTEPlayers = async () => {
-  const response = await fetch("http://localhost:3100/api/players/te");
+export const fetchPlayersByPosition = async (position: string) => {
+  const response = await fetch(`http://localhost:3100/api/players/${position}`);
 
   if (!response.ok) {
     throw new Error("Network response was not ok");

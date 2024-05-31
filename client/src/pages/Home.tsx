@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
-import { fetchAllPlayers, fetchQBPlayers } from "../util/api";
+import { fetchPlayersByPosition } from "../util/api";
 import { Player } from "../util/types";
+import Profile from "../components/UI/Profile";
 
 function App() {
   const [players, setPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
-    fetchQBPlayers()
+    fetchPlayersByPosition("TE")
       .then((data) => setPlayers(data))
       .catch(console.error);
   }, []);
@@ -15,6 +16,7 @@ function App() {
   return (
     <div className="min-h-screen">
       <div className="container flex flex-wrap gap-12">
+        <Profile />
         {players.map((player) => (
           <div
             key={player.PlayerId}

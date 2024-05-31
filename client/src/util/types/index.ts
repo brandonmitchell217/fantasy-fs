@@ -25,3 +25,9 @@ export interface Player {
   Rank?: number;
   TotalPoints?: number;
 }
+
+export interface User {
+  username: string;
+  email: string;
+  password: string;
+}
