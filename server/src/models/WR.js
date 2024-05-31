@@ -30,5 +30,4 @@ const wrSchema = new mongoose.Schema(
   }
 );
 
-const WR_Player = mongoose.model("WR_2023", wrSchema);
-module.exports = WR_Player;
+module.exports = wrSchema;

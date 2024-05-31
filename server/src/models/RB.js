@@ -30,5 +30,4 @@ const rbSchema = new mongoose.Schema(
   }
 );
 
-const RB_Player = mongoose.model("RB_2023", rbSchema);
-module.exports = RB_Player;
+module.exports = rbSchema;

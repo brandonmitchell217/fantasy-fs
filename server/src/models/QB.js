@@ -26,5 +26,4 @@ const qbSchema = new mongoose.Schema(
   }
 );
 
-const QB_Player = mongoose.model("QB_2023", qbSchema);
-module.exports = QB_Player;
+module.exports = qbSchema;

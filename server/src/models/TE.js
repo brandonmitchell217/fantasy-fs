@@ -27,5 +27,4 @@ const teSchema = new mongoose.Schema(
   }
 );
 
-const TE_Player = mongoose.model("TE_2023", teSchema);
-module.exports = TE_Player;
+module.exports = teSchema;
