@@ -2,7 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const axios = require("axios");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const app = express();
 
 dotenv.config();
@@ -11,6 +13,7 @@ app.use(cors());
 
 const playerDbUri = process.env.PLAYER_DB_URI || "";
 const userProfileDbUri = process.env.USER_PROFILE_DB_URI || "";
+const jwtSecret = process.env.SECRET_JWT_CODE || "your_jwt_secret";
 
 const playerDbConnection = mongoose.createConnection(playerDbUri);
 const userProfileDbConnection = mongoose.createConnection(userProfileDbUri);
@@ -142,6 +145,71 @@ app.post("/api/signup", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// login
+
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // Check if the password is correct
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign({ userId: user._id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+
+    // Respond with the token
+    res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Test route to perform signup and login from the server
+// app.get("/api/test-auth", async (req, res) => {
+//   try {
+//     const signupResponse = await axios.post(
+//       "http://localhost:3100/api/signup",
+//       {
+//         username: "testuser2",
+//         email: "testuser2@example.com",
+//         password: "password123",
+//       }
+//     );
+//     console.log("Signup Response:", signupResponse.data);
+
+//     const loginResponse = await axios.post("http://localhost:3100/api/login", {
+//       email: "testuser2@example.com",
+//       password: "password123",
+//     });
+//     console.log("Login Response:", loginResponse.data);
+
+//     res.status(200).json({
+//       signup: signupResponse.data,
+//       login: loginResponse.data,
+//     });
+//   } catch (error) {
+//     console.error("Test Auth Error:", error.message);
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 Promise.all([
   playerDbConnection.asPromise(),
