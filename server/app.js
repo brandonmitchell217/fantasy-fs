@@ -115,7 +115,21 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
-app.post("/api/signup", async (req, res) => {
+app.get("/api/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password"); // Exclude the password
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -137,45 +151,31 @@ app.post("/api/signup", async (req, res) => {
     });
 
     await newUser.save();
-    res
-      .status(201)
-      .json({ message: "User created successfully", user: newUser });
+
+    const token = jwt.sign({ userId: newUser._id }, "your_jwt_secret");
+    res.status(201).json({ message: "User created successfully", token });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: error.message });
   }
 });
 
-// login
-
-app.post("/api/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Check if the password is correct
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, jwtSecret, {
-      expiresIn: "1h",
-    });
-
-    // Respond with the token
-    res.status(200).json({ message: "Login successful", token });
+    const token = jwt.sign({ userId: user._id }, "your_jwt_secret");
+    res.json({ token });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: error.message });
@@ -186,7 +186,7 @@ app.post("/api/login", async (req, res) => {
 // app.get("/api/test-auth", async (req, res) => {
 //   try {
 //     const signupResponse = await axios.post(
-//       "http://localhost:3100/api/signup",
+//       "http://localhost:3100/signup",
 //       {
 //         username: "testuser2",
 //         email: "testuser2@example.com",
@@ -195,7 +195,7 @@ app.post("/api/login", async (req, res) => {
 //     );
 //     console.log("Signup Response:", signupResponse.data);
 
-//     const loginResponse = await axios.post("http://localhost:3100/api/login", {
+//     const loginResponse = await axios.post("http://localhost:3100/login", {
 //       email: "testuser2@example.com",
 //       password: "password123",
 //     });
