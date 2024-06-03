@@ -15,7 +15,7 @@ interface AuthContextProps {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   signup: (username: string, email: string, password: string) => Promise<void>;
-  likedPlayers: UserLike[];
+  likedPlayers: UserLike[] | null | undefined;
   fetchLikedPlayers: (userId: string) => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<void>;
   likePlayer: (userId: string, player: Player) => Promise<void>;
@@ -28,7 +28,7 @@ export const AuthContext = createContext<AuthContextProps | undefined>(
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>();
-  const [likedPlayers, setLikedPlayers] = useState<UserLike[]>([]);
+  const [likedPlayers, setLikedPlayers] = useState<UserLike[] | null>([]);
   const navigate = useNavigate();
 
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -68,7 +68,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const likePlayer = async (userId: string, player: Player) => {
-    const isLiked = likedPlayers.some((p) => p.PlayerId === player.PlayerId);
+    const isLiked = likedPlayers?.some((p) => p.PlayerId === player.PlayerId);
     if (isLiked) {
       return; // TODO: Add some UI feedback
     }
@@ -79,6 +79,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       });
+      if (!likedPlayers) return;
       setLikedPlayers([...likedPlayers, data]);
     } catch (error) {
       console.error("Failed to like player", error);
@@ -87,20 +88,18 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const deletePlayer = async (userId: string, player: Player) => {
     try {
-      await axios.delete(
-        `http://localhost:3100/api/users/${userId}/like/${player._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
-      const updatedLikedPlayers = likedPlayers.filter(
-        (p) => p.PlayerId !== player.PlayerId
-      );
-      setLikedPlayers(updatedLikedPlayers);
-      // TODO: A better way to update the UI
-      document.location.reload();
+      await axios
+        .delete(
+          `http://localhost:3100/api/users/${userId}/like/${player._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        )
+        .then(() => {
+          fetchLikedPlayers(userId);
+        });
     } catch (error) {
       console.error("Failed to delete player", error);
     }
@@ -127,6 +126,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("authToken");
     setUser(null);
+    setLikedPlayers([]);
     navigate("/");
   };
 
