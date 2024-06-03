@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { fetchPlayersByPosition } from "../util/api";
 import { Player } from "../util/types";
 import Profile from "../components/UI/Profile";
+import Like from "../components/Like";
 
 function App() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -20,8 +21,11 @@ function App() {
         {players.map((player) => (
           <div
             key={player.PlayerId}
-            className="text-white text-2xl border border-white rounded-lg p-3"
+            className="relative text-white text-2xl border border-white rounded-lg p-3"
           >
+            <div className="absolute top-2 right-2 cursor-pointer">
+              <Like player={player} />
+            </div>
             <h2>{player.PlayerName}</h2>
             <p>{player.Pos}</p>
             <p>{player.Team}</p>
