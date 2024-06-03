@@ -19,6 +19,7 @@ interface AuthContextProps {
   fetchLikedPlayers: (userId: string) => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<void>;
   likePlayer: (userId: string, player: Player) => Promise<void>;
+  deletePlayer: (userId: string, player: Player) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(
@@ -84,6 +85,27 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const deletePlayer = async (userId: string, player: Player) => {
+    try {
+      await axios.delete(
+        `http://localhost:3100/api/users/${userId}/like/${player._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      const updatedLikedPlayers = likedPlayers.filter(
+        (p) => p.PlayerId !== player.PlayerId
+      );
+      setLikedPlayers(updatedLikedPlayers);
+      // TODO: A better way to update the UI
+      document.location.reload();
+    } catch (error) {
+      console.error("Failed to delete player", error);
+    }
+  };
+
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post("http://localhost:3100/login", {
@@ -138,6 +160,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchUserProfile,
         likedPlayers,
         likePlayer,
+        deletePlayer,
       }}
     >
       {children}
