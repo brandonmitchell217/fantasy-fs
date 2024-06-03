@@ -131,6 +131,22 @@ app.get("/api/users/:id", async (req, res) => {
   }
 });
 
+app.get("/api/users/:id/like", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const userLikes = await UserLike.find({ userId: userId });
+
+    if (!userLikes) {
+      return res.status(404).json({ message: "User has no likes" });
+    }
+
+    res.status(200).json(userLikes);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post("/api/users/:id/like", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -149,6 +165,30 @@ app.post("/api/users/:id/like", async (req, res) => {
 
     const userLike = await UserLike.create(req.body);
     await userLike.save();
+
+    res.status(200).json(userLike);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.delete("/api/users/:id/like/:likeId", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const likeId = req.params.likeId;
+
+    if (!userId || !likeId) {
+      return res
+        .status(400)
+        .json({ message: "UserId and LikeId are required" });
+    }
+
+    const userLike = await UserLike.findOneAndDelete({ _id: likeId });
+
+    if (!userLike) {
+      return res.status(404).json({ message: "Like not found" });
+    }
 
     res.status(200).json(userLike);
   } catch (error) {

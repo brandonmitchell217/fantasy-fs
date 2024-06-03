@@ -2,14 +2,14 @@
 import { useState, useEffect } from "react";
 import { fetchPlayersByPosition } from "../util/api";
 import { Player } from "../util/types";
-import Profile from "../components/UI/Profile";
+// import Profile from "../components/UI/Profile";
 import Like from "../components/Like";
 
 function App() {
   const [players, setPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
-    fetchPlayersByPosition("TE")
+    fetchPlayersByPosition("QB")
       .then((data) => setPlayers(data))
       .catch(console.error);
   }, []);
@@ -17,8 +17,8 @@ function App() {
   return (
     <div className="min-h-screen">
       <div className="container flex flex-wrap gap-12">
-        <Profile />
-        {players.map((player) => (
+        {/* <Profile /> */}
+        {players.slice(0, 9).map((player) => (
           <div
             key={player.PlayerId}
             className="relative text-white text-2xl border border-white rounded-lg p-3"
