@@ -25,7 +25,8 @@ export default function Nav() {
             <a href="/second">Second</a>
           </li>
           {auth?.user ? (
-            <li>
+            <li className="flex flex-col gap-1">
+              {auth.user.username}
               <Logout />
             </li>
           ) : (

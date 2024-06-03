@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Player, User, UserLike } from "../types";
 
 interface AuthContextProps {
-  user: any;
+  user: User | null | undefined;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   signup: (username: string, email: string, password: string) => Promise<void>;
+  likedPlayers: UserLike[];
+  fetchLikedPlayers: (userId: string) => Promise<void>;
+  fetchUserProfile: (userId: string) => Promise<void>;
+  likePlayer: (userId: string, player: Player) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(
@@ -15,8 +26,21 @@ export const AuthContext = createContext<AuthContextProps | undefined>(
 );
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>();
+  const [likedPlayers, setLikedPlayers] = useState<UserLike[]>([]);
   const navigate = useNavigate();
+
+  const fetchUserProfile = useCallback(async (userId: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3100/api/users/${userId}`
+      );
+      setUser(response.data);
+      await fetchLikedPlayers(userId);
+    } catch (error) {
+      console.error("Failed to fetch user profile", error);
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -29,16 +53,34 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem("authToken");
       }
     }
-  }, []);
+  }, [fetchUserProfile]);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchLikedPlayers = async (userId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3100/api/users/${userId}`
+        `http://localhost:3100/api/users/${userId}/like`
       );
-      setUser(response.data);
+      setLikedPlayers(response.data);
     } catch (error) {
-      console.error("Failed to fetch user profile", error);
+      console.error("Failed to fetch liked players", error);
+    }
+  };
+
+  const likePlayer = async (userId: string, player: Player) => {
+    const isLiked = likedPlayers.some((p) => p.PlayerId === player.PlayerId);
+    if (isLiked) {
+      return; // TODO: Add some UI feedback
+    }
+    try {
+      const data = { userId, ...player };
+      await axios.post(`http://localhost:3100/api/users/${userId}/like`, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+      setLikedPlayers([...likedPlayers, data]);
+    } catch (error) {
+      console.error("Failed to like player", error);
     }
   };
 
@@ -86,7 +128,18 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, signup }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        signup,
+        fetchLikedPlayers,
+        fetchUserProfile,
+        likedPlayers,
+        likePlayer,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

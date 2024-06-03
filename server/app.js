@@ -131,6 +131,22 @@ app.get("/api/users/:id", async (req, res) => {
   }
 });
 
+app.get("/api/users/:id/like", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const userLikes = await UserLike.find({ userId: userId });
+
+    if (!userLikes) {
+      return res.status(404).json({ message: "User has no likes" });
+    }
+
+    res.status(200).json(userLikes);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post("/api/users/:id/like", async (req, res) => {
   try {
     const userId = req.params.id;
