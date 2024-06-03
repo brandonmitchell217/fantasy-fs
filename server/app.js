@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const axios = require("axios");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const userLikeSchema = require("./src/models/UserLike");
 const app = express();
 
 dotenv.config();
@@ -30,6 +31,7 @@ const User = userProfileDbConnection.model(
   "User",
   require("./src/models/User")
 );
+const UserLike = userProfileDbConnection.model("UserLike", userLikeSchema);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -125,6 +127,32 @@ app.get("/api/users/:id", async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/users/:id/like", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (
+      !userId ||
+      !req.body.PlayerName ||
+      !req.body.Pos ||
+      !req.body.Team ||
+      !req.body.PlayerId
+    ) {
+      return res.status(400).json({
+        message: "UserId, PlayerName, Pos, Team and PlayerId are required",
+      });
+    }
+
+    const userLike = await UserLike.create(req.body);
+    await userLike.save();
+
+    res.status(200).json(userLike);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).json({ message: error.message });
   }
 });
