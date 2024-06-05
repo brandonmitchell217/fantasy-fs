@@ -1,36 +1,46 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect } from "react";
-import { fetchPlayersByPosition } from "../util/api";
+import { useState, useEffect, useContext } from "react";
+import {
+  fetchPlayersByPosition,
+  fetchAllPlayers,
+  fetchPlayerById,
+  fetchPlayersByTeam,
+} from "../util/api";
 import { Player } from "../util/types";
+import PlayerCard from "../components/Card/PlayerCard";
 // import Profile from "../components/UI/Profile";
-import Like from "../components/Like";
 
 function App() {
-  const [players, setPlayers] = useState<Player[]>([]);
+  // TODO: Set up dummy data
+  // const PlayerData = useContext(PlayersContext);
+  // const players = PlayerData?.players;
+  const [players, setPlayers] = useState<Player[] | undefined>(undefined);
+  // const [player, setPlayer] = useState<Player | undefined>(undefined);
+  fetchPlayersByTeam("KC")
+    .then((data) => setPlayers(data))
+    .catch(console.error);
 
-  useEffect(() => {
-    fetchPlayersByPosition("QB")
-      .then((data) => setPlayers(data))
-      .catch(console.error);
-  }, []);
+  // useEffect(() => {
+  //   fetchPlayersByPosition("wr")
+  //     .then((data) => setPlayers(data))
+  //     .catch(console.error);
+  //   // fetchPlayerById(2563848)
+  //   //   .then((data) => setPlayer(data))
+  //   //   .catch(console.error);
+  // }, []);
 
   return (
     <div className="min-h-screen">
-      <div className="container flex flex-wrap gap-12">
+      <div className="container flex flex-col gap-1.5">
         {/* <Profile /> */}
-        {players.slice(0, 9).map((player) => (
-          <div
-            key={player.PlayerId}
-            className="relative text-white text-2xl border border-white rounded-lg p-3"
-          >
-            <div className="absolute top-2 right-2 cursor-pointer">
-              <Like player={player} />
-            </div>
-            <h2>{player.PlayerName}</h2>
-            <p>{player.Pos}</p>
-            <p>{player.Team}</p>
-          </div>
-        ))}
+
+        {players &&
+          players
+            // .slice(0, 4)
+            .map((player) => (
+              <PlayerCard key={player.PlayerId} player={player} />
+            ))}
+        {/* {player && <PlayerCard player={player} />} */}
       </div>
     </div>
   );

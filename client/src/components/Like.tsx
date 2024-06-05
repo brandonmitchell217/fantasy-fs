@@ -44,7 +44,7 @@ export default function Like({ player }: { player: Player }) {
   };
 
   const messageClass =
-    "absolute -top-10 left-1/2 -translate-x-1/2 z-50 rounded-lg text-center p-1 text-[12px] leading-none w-24 text-black";
+    "absolute -top-5 -left-4 z-50 rounded-lg text-center p-1 text-[12px] leading-none w-24 text-black";
 
   const AddMessage = () => {
     return <div className={`${messageClass} bg-green-300`}>Player liked!</div>;
@@ -66,7 +66,7 @@ export default function Like({ player }: { player: Player }) {
         <>
           <button
             type="button"
-            className="text-red-500 text-xl font-bold"
+            className="text-red-500 text-xl font-bold p-1"
             onClick={handleLike}
           >
             -
@@ -77,7 +77,7 @@ export default function Like({ player }: { player: Player }) {
         <>
           <button
             type="button"
-            className="text-green-500 text-xl font-bold"
+            className="text-green-500 text-xl font-bold p-1"
             onClick={handleLike}
           >
             +
