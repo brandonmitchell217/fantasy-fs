@@ -9,15 +9,22 @@ import {
 
 export default function PlayerCard({ player }: { player: Player }) {
   const stats = extractPlayerStats(player);
-  const handleClick = () => {
-    console.log(player);
-    console.log(stats);
-  };
+  const [loading, setLoading] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    if (player) setLoading(false);
+  }, [player]);
+
+  if (loading) {
+    return (
+      <div className="relative h-[50px] w-full border-2 border-white pl-2 rounded-lg flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="relative w-full border-2 border-white pl-2 rounded-lg flex items-center"
-      onClick={handleClick}
-    >
+    <div className="relative w-full border-2 border-white pl-2 rounded-lg flex items-center">
       <Like player={player} />
       <div className="w-1/12 px-1 flex flex-col">
         <h6 className="text-xs font-bold">{player.PlayerName}</h6>
