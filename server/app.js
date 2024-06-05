@@ -51,6 +51,22 @@ app.get("/api/players", async (req, res) => {
   }
 });
 
+app.get("/api/players/teams/:team", async (req, res) => {
+  try {
+    const team = req.params.team;
+    const players = await Player.find({ Team: team.toUpperCase() });
+
+    if (!players) {
+      return res.status(404).json({ message: "Players not found" });
+    }
+
+    res.status(200).json(players);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.get("/api/players/qb", async (req, res) => {
   try {
     const qb = await QB.find({});
