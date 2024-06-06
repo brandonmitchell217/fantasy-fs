@@ -15,6 +15,17 @@ function App() {
   // TODO: Set up dummy data
   const PlayerData = useContext(PlayersContext);
   const players = PlayerData?.players;
+  const urlParams = new URLSearchParams(window.location.search);
+  const option = urlParams.get("option");
+
+  useEffect(() => {
+    if (option) {
+      fetchPlayersByPosition(option).then((data) => {
+        PlayerData?.setPosition(option);
+        PlayerData?.setPlayers(data);
+      });
+    }
+  }, [option, PlayerData]);
 
   return (
     <div className="min-h-screen">

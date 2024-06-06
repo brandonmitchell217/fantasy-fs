@@ -9,16 +9,17 @@ export default function PositionFilter() {
 
   return (
     <div className="py-2 flex justify-end">
-      <ul className="flex items-center gap-6">
+      <ul className="flex items-center gap-2">
         {options.map((option) => (
           <li key={option}>
             <Link
+              className={`py-2 px-4 rounded border ${
+                playerProv?.position === option
+                  ? "bg-lime-500 text-slate-800 border-lime-500"
+                  : "text-gray-500 border-gray-500 hover:bg-lime-300 hover:text-slate-800"
+              }`}
               to={`/?option=${option}`}
-              onClick={() => {
-                if (playerProv?.setPosition) {
-                  playerProv.setPosition(option);
-                }
-              }}
+              onClick={() => playerProv?.setPosition(option)}
             >
               {option}
             </Link>

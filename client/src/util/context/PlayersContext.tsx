@@ -57,7 +57,13 @@ const PlayersProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <PlayersContext.Provider
-      value={{ players, setPlayers, fetchPlayers, position, setPosition }}
+      value={{
+        players,
+        setPlayers,
+        fetchPlayers,
+        position,
+        setPosition,
+      }}
     >
       {children}
     </PlayersContext.Provider>
