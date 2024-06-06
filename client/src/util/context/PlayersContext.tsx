@@ -2,12 +2,11 @@ import React, { SetStateAction } from "react";
 import axios from "axios";
 import { Player } from "../types";
 
-// TODO: Remove param if not needed
-
 interface PlayersContextProps {
   players: Player[];
-  param?: string | null;
-  setParam?: (param: string) => void;
+  setPlayers: (players: Player[]) => void;
+  position?: string | null;
+  setPosition: (position: string) => void;
   fetchPlayers: (
     query?: string,
     param?: string | number | undefined
@@ -20,11 +19,7 @@ export const PlayersContext = React.createContext<
 
 const PlayersProvider = ({ children }: { children: React.ReactNode }) => {
   const [players, setPlayers] = React.useState<Player[]>([]);
-  //   const [param, setParam] = React.useState<string | null>(query || null);
-
-  React.useEffect(() => {
-    fetchPlayers();
-  }, []);
+  const [position, setPosition] = React.useState<string>("All_Positions");
 
   const fetchPlayers = async (
     query?: string,
@@ -52,8 +47,24 @@ const PlayersProvider = ({ children }: { children: React.ReactNode }) => {
     setPlayers(data);
   };
 
+  React.useEffect(() => {
+    if (position === "All_Positions") {
+      fetchPlayers();
+    } else {
+      fetchPlayers("pos", position);
+    }
+  }, [position]);
+
   return (
-    <PlayersContext.Provider value={{ players, fetchPlayers }}>
+    <PlayersContext.Provider
+      value={{
+        players,
+        setPlayers,
+        fetchPlayers,
+        position,
+        setPosition,
+      }}
+    >
       {children}
     </PlayersContext.Provider>
   );

@@ -1,5 +1,26 @@
 import { Player } from "./types";
 
+export const filterPlayersByPosition = (
+  players: Player[],
+  position: string
+) => {
+  return players.filter((player) => player.Pos === position);
+};
+
+export const filterPlayersByTeam = (players: Player[], team: string) => {
+  return players.filter((player) => player.Team === team);
+};
+
+export const filterPlayersByPositionAndTeam = (
+  players: Player[],
+  position: string,
+  team: string
+) => {
+  return players.filter(
+    (player) => player.Pos === position && player.Team === team
+  );
+};
+
 export const determinePlayerColor = (team: string) => {
   switch (team) {
     case "ARI":

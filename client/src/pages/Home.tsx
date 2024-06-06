@@ -8,31 +8,29 @@ import {
 } from "../util/api";
 import { Player } from "../util/types";
 import PlayerCard from "../components/Card/PlayerCard";
-// import Profile from "../components/UI/Profile";
+import { PlayersContext } from "../util/context/PlayersContext";
+import PositionFilter from "../components/UI/PositionFilter";
 
 function App() {
   // TODO: Set up dummy data
-  // const PlayerData = useContext(PlayersContext);
-  // const players = PlayerData?.players;
-  const [players, setPlayers] = useState<Player[] | undefined>(undefined);
-  // const [player, setPlayer] = useState<Player | undefined>(undefined);
-  fetchPlayersByTeam("KC")
-    .then((data) => setPlayers(data))
-    .catch(console.error);
+  const PlayerData = useContext(PlayersContext);
+  const players = PlayerData?.players;
+  const urlParams = new URLSearchParams(window.location.search);
+  const option = urlParams.get("option");
 
-  // useEffect(() => {
-  //   fetchPlayersByPosition("wr")
-  //     .then((data) => setPlayers(data))
-  //     .catch(console.error);
-  //   // fetchPlayerById(2563848)
-  //   //   .then((data) => setPlayer(data))
-  //   //   .catch(console.error);
-  // }, []);
+  useEffect(() => {
+    if (option) {
+      fetchPlayersByPosition(option).then((data) => {
+        PlayerData?.setPosition(option);
+        PlayerData?.setPlayers(data);
+      });
+    }
+  }, [option, PlayerData]);
 
   return (
     <div className="min-h-screen">
       <div className="container flex flex-col gap-1.5">
-        {/* <Profile /> */}
+        <PositionFilter />
 
         {players &&
           players
