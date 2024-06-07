@@ -1,25 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect, useContext } from "react";
-import {
-  fetchPlayersByPosition,
-  fetchAllPlayers,
-  fetchPlayerById,
-  fetchPlayersByTeam,
-} from "../util/api";
-import { Player } from "../util/types";
+import { useEffect, useContext } from "react";
+import { fetchPlayersByPosition } from "../util/api";
 import PlayerCard from "../components/Card/PlayerCard";
 import { PlayersContext } from "../util/context/PlayersContext";
 import PositionFilter from "../components/UI/PositionFilter";
 
 function App() {
-  // TODO: Set up dummy data
   const PlayerData = useContext(PlayersContext);
   const players = PlayerData?.players;
   const urlParams = new URLSearchParams(window.location.search);
   const option = urlParams.get("option");
 
   useEffect(() => {
-    if (option) {
+    if (option && option != "All_Positions") {
       fetchPlayersByPosition(option).then((data) => {
         PlayerData?.setPosition(option);
         PlayerData?.setPlayers(data);

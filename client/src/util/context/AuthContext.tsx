@@ -16,6 +16,7 @@ interface AuthContextProps {
   logout: () => void;
   signup: (username: string, email: string, password: string) => Promise<void>;
   likedPlayers: UserLike[] | null | undefined;
+  setLikedPlayers: React.Dispatch<React.SetStateAction<UserLike[] | null>>;
   fetchLikedPlayers: (userId: string) => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<void>;
   likePlayer: (userId: string, player: Player) => Promise<void>;
@@ -159,6 +160,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchLikedPlayers,
         fetchUserProfile,
         likedPlayers,
+        setLikedPlayers,
         likePlayer,
         deletePlayer,
       }}

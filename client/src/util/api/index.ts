@@ -52,3 +52,17 @@ export const fetchPlayersByTeam = async (team: string) => {
 
   return data;
 };
+
+export const fetchUserLikes = async (userId: string) => {
+  const response = await axios.get(
+    `http://localhost:3100/api/users/${userId}/like`
+  );
+
+  if (!response) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data: Player[] = await response.data;
+
+  return data;
+};

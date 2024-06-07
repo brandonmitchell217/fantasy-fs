@@ -7,7 +7,7 @@ import Login from "./pages/Login.tsx";
 import "./index.css";
 import Main from "./layouts/Main.tsx";
 import AuthProvider from "./util/context/AuthContext.tsx";
-import Profile from "./components/UI/Profile.tsx";
+import Profile from "./pages/protected/Profile.tsx";
 import Signup from "./pages/Signup.tsx";
 import PlayersProvider from "./util/context/PlayersContext.tsx";
 
@@ -27,7 +27,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               {isAuthenticated() ? (
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/user/:id/profile" element={<Profile />} />
               ) : null}
             </Routes>
           </Suspense>
