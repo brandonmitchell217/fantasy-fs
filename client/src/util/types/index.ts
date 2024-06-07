@@ -36,6 +36,7 @@ export interface User {
 }
 
 export interface UserLike {
+  _id: string; // Maybe a ?
   userId: string;
   PlayerName: string;
   PlayerId: number;

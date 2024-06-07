@@ -5,7 +5,7 @@ import { Player } from "../types";
 interface PlayersContextProps {
   players: Player[];
   setPlayers: (players: Player[]) => void;
-  position?: string | null;
+  position: string;
   setPosition: (position: string) => void;
   fetchPlayers: (
     query?: string,
@@ -50,8 +50,6 @@ const PlayersProvider = ({ children }: { children: React.ReactNode }) => {
   React.useEffect(() => {
     if (position === "All_Positions") {
       fetchPlayers();
-    } else {
-      fetchPlayers("pos", position);
     }
   }, [position]);
 
